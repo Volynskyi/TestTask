@@ -53,7 +53,6 @@ public class DataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        Log.d("test111", " onBindViewHolder worked");
         final ResponseMain currentItem = getItem(position);
         final VHItem vhItem = (VHItem) holder;
         vhItem.userName.setText(currentItem.getUser().getName());

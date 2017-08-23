@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -88,7 +87,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         call.enqueue(new Callback<List<ResponseMain>>() {
             @Override
             public void onResponse(Call<List<ResponseMain>> call, Response<List<ResponseMain>> response) {
-                Log.d("test1", "onResponse worked");
                 if (response.code() == 200) {
                     List<ResponseMain> responseMainList = response.body();
                     dataAdapter = new DataAdapter(LoginActivity.this, responseMainList);
@@ -99,7 +97,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFailure(Call<List<ResponseMain>> call, Throwable t) {
                 t.printStackTrace();
-                Log.d("test1", "onFailure worked");
             }
         });
     }
