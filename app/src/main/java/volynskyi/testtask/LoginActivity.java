@@ -18,6 +18,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import volynskyi.testtask.api.APIClient;
+import volynskyi.testtask.api.RecyclerView.DataAdapter;
 import volynskyi.testtask.api.ServiceGenerator;
 import volynskyi.testtask.api.apiModel.ResponseMain;
 import volynskyi.testtask.api.authorizationModel.AccessToken;
