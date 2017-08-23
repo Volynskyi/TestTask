@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,14 +26,12 @@ import volynskyi.testtask.api.authorizationModel.AccessToken;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    String token;
-    SharedPreferences prefs;
-    Button login;
-    RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager;
-    boolean latestClicked, oldestClicked, popularClicked;
-    Button latest, oldest, popular;
-    DataAdapter dataAdapter;
+    private SharedPreferences prefs;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private Button latest, oldest, popular, random;
+    private DataAdapter dataAdapter;
+    private boolean latestClicked, oldestClicked, popularClicked, randomClicked;
 
     private static final String CLIENT_ID = "412a6b16dc47276524aec7a14c1a3336843628e4b891c412f190d642bcca3b02";
     private static final String REDIRECT_URI = "com.volynskyi.testtask://oauth";
@@ -45,55 +44,51 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_login);
 
         prefs = this.getSharedPreferences(
                 BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
-        if (prefs.getString("oauth.accesstoken", null) == null) {
-            login = (Button) findViewById(R.id.button);
-            login.setVisibility(View.VISIBLE);
-            login.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    authenticateUser();
-                    getToken(prefs);
-                }
-            });
-            login.setVisibility(View.GONE);
+        while (prefs.getString("oauth.accesstoken", null) == null) {
+            authenticateUser();
+            getToken(prefs);
         }
-        token = prefs.getString("oauth.accesstoken", null);
 
         initButtons();
         initRecyclerView();
-        oldestClicked = popularClicked = false;
+        oldestClicked = popularClicked = randomClicked = false;
         latestClicked = true;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        retrofitGetLatestPhoto("latest");
+        retrofitGetPhoto("latest");
     }
 
     private void initButtons() {
         latest = (Button) findViewById(R.id.latest);
         oldest = (Button) findViewById(R.id.oldest);
         popular = (Button) findViewById(R.id.popular);
+        random = (Button) findViewById(R.id.random);
         latest.setOnClickListener(this);
         oldest.setOnClickListener(this);
         popular.setOnClickListener(this);
+        random.setOnClickListener(this);
     }
 
-    private void retrofitGetLatestPhoto(String order_by) {
+    private void retrofitGetPhoto(String order_by) {
         APIClient client = ServiceGenerator.createService(APIClient.class, BASE_API);
         Call<List<ResponseMain>> call = client.getPhotos(TOKEN_INCASE, order_by);
-        responseResult(call);
+        responseListResult(call);
     }
 
-    private void responseResult(Call<List<ResponseMain>> call) {
+    private void retrofitGetPhoto() {
+        APIClient client = ServiceGenerator.createService(APIClient.class, BASE_API);
+        Call<ResponseMain> call = client.getRandom(TOKEN_INCASE);
+        responseRandomResult(call);
+    }
+
+    private void responseListResult(Call<List<ResponseMain>> call) {
         call.enqueue(new Callback<List<ResponseMain>>() {
             @Override
             public void onResponse(Call<List<ResponseMain>> call, Response<List<ResponseMain>> response) {
+                Log.d("test1", "onResponse worked");
                 if (response.code() == 200) {
                     List<ResponseMain> responseMainList = response.body();
                     dataAdapter = new DataAdapter(LoginActivity.this, responseMainList);
@@ -103,6 +98,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onFailure(Call<List<ResponseMain>> call, Throwable t) {
+                t.printStackTrace();
+                Log.d("test1", "onFailure worked");
+            }
+        });
+    }
+
+    private void responseRandomResult(Call<ResponseMain> call) {
+        call.enqueue(new Callback<ResponseMain>() {
+            @Override
+            public void onResponse(Call<ResponseMain> call, Response<ResponseMain> response) {
+                if (response.code() == 200) {
+                    ResponseMain responseMainList = response.body();
+                    dataAdapter = new DataAdapter(LoginActivity.this, responseMainList);
+                    recyclerView.setAdapter(dataAdapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseMain> call, Throwable t) {
             }
         });
     }
@@ -162,18 +176,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         oldestClicked = !oldestClicked;
                         oldest.setTextColor(Color.WHITE);
                         oldest.setBackgroundColor(Color.BLACK);
+                        latest.setTextColor(Color.BLACK);
+                        latest.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("latest");
+                        break;
                     }
                     if (popularClicked) {
                         popularClicked = !popularClicked;
                         popular.setTextColor(Color.WHITE);
                         popular.setBackgroundColor(Color.BLACK);
+                        latest.setTextColor(Color.BLACK);
+                        latest.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("latest");
+                        break;
+                    } else {
+                        randomClicked = !randomClicked;
+                        latest.setTextColor(Color.BLACK);
+                        latest.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("latest");
+                        break;
                     }
-                    latest.setTextColor(Color.BLACK);
-                    latest.setBackgroundColor(Color.WHITE);
-
-                    retrofitGetLatestPhoto("latest");
                 }
-                break;
+
             case R.id.oldest:
                 if (!oldestClicked) {
                     oldestClicked = !oldestClicked;
@@ -181,18 +205,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         latestClicked = !latestClicked;
                         latest.setTextColor(Color.WHITE);
                         latest.setBackgroundColor(Color.BLACK);
+                        oldest.setTextColor(Color.BLACK);
+                        oldest.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("oldest");
+                        break;
                     }
                     if (popularClicked) {
                         popularClicked = !popularClicked;
                         popular.setTextColor(Color.WHITE);
                         popular.setBackgroundColor(Color.BLACK);
+                        oldest.setTextColor(Color.BLACK);
+                        oldest.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("oldest");
+                        break;
+                    } else {
+                        randomClicked = !randomClicked;
+                        oldest.setTextColor(Color.BLACK);
+                        oldest.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("oldest");
+                        break;
                     }
-                    oldest.setTextColor(Color.BLACK);
-                    oldest.setBackgroundColor(Color.WHITE);
-
-                    retrofitGetLatestPhoto("oldest");
                 }
-                break;
+
             case R.id.popular:
                 if (!popularClicked) {
                     popularClicked = !popularClicked;
@@ -200,18 +234,52 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         latestClicked = !latestClicked;
                         latest.setTextColor(Color.WHITE);
                         latest.setBackgroundColor(Color.BLACK);
+                        popular.setTextColor(Color.BLACK);
+                        popular.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("popular");
+                        break;
                     }
                     if (oldestClicked) {
                         oldestClicked = !oldestClicked;
                         oldest.setTextColor(Color.WHITE);
                         oldest.setBackgroundColor(Color.BLACK);
+                        popular.setTextColor(Color.BLACK);
+                        popular.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("popular");
+                        break;
+                    } else {
+                        randomClicked = !randomClicked;
+                        popular.setTextColor(Color.BLACK);
+                        popular.setBackgroundColor(Color.WHITE);
+                        retrofitGetPhoto("popular");
+                        break;
                     }
-                    popular.setTextColor(Color.BLACK);
-                    popular.setBackgroundColor(Color.WHITE);
-
-                    retrofitGetLatestPhoto("popular");
                 }
-                break;
+
+            case R.id.random:
+                if (!randomClicked) {
+                    randomClicked = !randomClicked;
+                    if (latestClicked) {
+                        latestClicked = !latestClicked;
+                        latest.setTextColor(Color.WHITE);
+                        latest.setBackgroundColor(Color.BLACK);
+                        retrofitGetPhoto();
+                        break;
+                    }
+                    if (oldestClicked) {
+                        oldestClicked = !oldestClicked;
+                        oldest.setTextColor(Color.WHITE);
+                        oldest.setBackgroundColor(Color.BLACK);
+                        retrofitGetPhoto();
+                        break;
+                    } else {
+                        popularClicked = !popularClicked;
+                        popular.setTextColor(Color.WHITE);
+                        popular.setBackgroundColor(Color.BLACK);
+                        retrofitGetPhoto();
+                        break;
+                    }
+                }
         }
     }
 }

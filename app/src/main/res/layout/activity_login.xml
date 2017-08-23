@@ -11,20 +11,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="volynskyi.testtask.LoginActivity">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/login"
-        android:visibility="gone" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="?android:buttonBarStyle"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/latest"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -32,8 +27,13 @@
             android:textColor="@color/colorBlack"
             android:background="@color/colorWhite" />
 
+        <View android:layout_height="fill_parent"
+            android:layout_width="1dp"
+            android:background="#90909090"/>
+
         <Button
             android:id="@+id/oldest"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -41,7 +41,12 @@
             android:textColor="@color/colorWhite"
             android:background="@color/colorBlack"/>
 
+        <View android:layout_height="fill_parent"
+            android:layout_width="1dp"
+            android:background="#90909090"/>
+
         <Button
+            style="?android:attr/buttonBarButtonStyle"
             android:id="@+id/popular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,6 +54,17 @@
             android:text="@string/popular"
             android:textColor="@color/colorWhite"
             android:background="@color/colorBlack"/>
+
+        <Button
+            android:id="@+id/random"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:text="@string/random"
+            android:textColor="@color/colorBlue"
+            android:background="@color/colorWhite"/>
+
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

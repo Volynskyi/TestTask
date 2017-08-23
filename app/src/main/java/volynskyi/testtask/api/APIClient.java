@@ -14,8 +14,6 @@ import retrofit2.http.Query;
 import volynskyi.testtask.api.apiModel.ResponseMain;
 import volynskyi.testtask.api.authorizationModel.AccessToken;
 
-import static android.R.attr.id;
-
 public interface APIClient {
 
     @FormUrlEncoded
@@ -27,22 +25,23 @@ public interface APIClient {
             @Field("redirect_uri") String redirectUri,
             @Field("grant_type") String grantType);
 
-
     @GET("photos")
     Call<List<ResponseMain>> getPhotos(
             @Header("Authorization") String token,
             @Query("order_by") String sort);
-
 
     @POST("photos/{id}/like")
     Call<ResponseMain> likePhoto(
             @Header("Authorization") String token,
             @Path("id") String id);
 
-
     @DELETE("photos/{id}/like")
     Call<ResponseMain> unlikePhoto(
             @Header("Authorization") String token,
             @Path("id") String id);
+
+    @GET("photos/random")
+    Call<ResponseMain> getRandom(
+            @Header("Authorization") String token);
 
 }

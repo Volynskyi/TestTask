@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -27,12 +28,17 @@ import static volynskyi.testtask.R.drawable.like;
 
 public class DataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<ResponseMain> responseMainList;
+    private List<ResponseMain> responseMainList = new ArrayList<>();
     private Context context;
 
     public DataAdapter(Context context, List<ResponseMain> response) {
         this.context = context;
         responseMainList = response;
+    }
+
+    public DataAdapter(Context context, ResponseMain response) {
+        this.context = context;
+        responseMainList.add(response);
     }
 
     @Override
