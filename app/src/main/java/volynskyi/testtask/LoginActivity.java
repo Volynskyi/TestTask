@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -48,7 +49,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         prefs = this.getSharedPreferences(
                 BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE);
-        while (prefs.getString("oauth.accesstoken", null) == null) {
+        if (prefs.getString("oauth.accesstoken", null) == null) {
             authenticateUser();
             getToken(prefs);
         }

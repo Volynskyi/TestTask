@@ -63,7 +63,7 @@ public class DataAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         Picasso.with(context)
                 .load(avatarUrl)
-                .placeholder(R.drawable.avatar_place_holder)
+                .placeholder(R.drawable.avatar_placeholder)
                 .into(vhItem.avatar);
 
         Picasso.with(context)
