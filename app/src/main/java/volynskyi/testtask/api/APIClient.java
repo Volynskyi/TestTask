@@ -1,14 +1,20 @@
 package volynskyi.testtask.api;
 
+import java.util.List;
+
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
-import volynskyi.testtask.api.objects.AccessToken;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+import volynskyi.testtask.api.apiModel.ResponseMain;
+import volynskyi.testtask.api.authorizationModel.AccessToken;
 
-/**
- * Created by vova on 19.08.2017.
- */
+import static android.R.attr.id;
 
 public interface APIClient {
 
@@ -20,4 +26,23 @@ public interface APIClient {
             @Field("client_secret") String clientSecret,
             @Field("redirect_uri") String redirectUri,
             @Field("grant_type") String grantType);
+
+
+    @GET("photos")
+    Call<List<ResponseMain>> getPhotos(
+            @Header("Authorization") String token,
+            @Query("order_by") String sort);
+
+
+    @POST("photos/{id}/like")
+    Call<ResponseMain> likePhoto(
+            @Header("Authorization") String token,
+            @Path("id") String id);
+
+
+    @DELETE("photos/{id}/like")
+    Call<ResponseMain> unlikePhoto(
+            @Header("Authorization") String token,
+            @Path("id") String id);
+
 }
